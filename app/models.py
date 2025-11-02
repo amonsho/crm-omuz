@@ -67,7 +67,7 @@ class CourseModel(BaseModel):
     teacher_id = Column(Integer, ForeignKey("teacher_profiles.id"))
 
     teacher = relationship("TeacherProfile", back_populates="courses")
-    enrollments = relationship("Enrollment", back_populates="course")
+    enrollments = relationship("EnrollmentModel", back_populates="course")
 
 class EnrollmentStatus(Enum):
     ACTIVE = "active"
