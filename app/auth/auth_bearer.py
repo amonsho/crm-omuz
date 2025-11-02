@@ -1,7 +1,7 @@
 from fastapi import Request, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-from auth_handler import decode_jwt
+from .auth_handler import decode_jwt
 
 from db_config import SessionLocal
 from sqlalchemy.orm import Session
@@ -23,18 +23,17 @@ class JWTBearer(HTTPBearer):
         else:
             raise HTTPException(status_code=403, detail="invalid authorization code")
         
-    def verify_jwt(self, jwtoken: str) ->str:
-        try:
+    def verify_jwt(self, jwtoken: str) ->bool:
             payload = decode_jwt(jwtoken)
-            print("decoded payload", payload)
-        except Exception as e:
-            print('verify_jwt_error', e)
-            return False
-        
-        db:Session = SessionLocal()
-        blacklisted = db.query(BlackListedToken).filter(BlackListedToken.token == jwtoken).first()
-        db.close()
-        if blacklisted:
-            return False
-        
-        return payload is not None
+            if not payload:
+                 return False
+
+            db:Session = SessionLocal()
+            try:
+                blacklisted = db.query(BlackListedToken).filter(BlackListedToken.token == jwtoken).first()
+                if blacklisted:
+                    return False
+            finally:
+                db.close()
+            
+            return True
