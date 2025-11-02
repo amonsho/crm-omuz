@@ -28,6 +28,7 @@ class UserModel(BaseModel):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     full_name = Column(String(200), nullable=True)
     email = Column(String(200), unique=True, nullable=False)
+    password = Column(String(200), nullable=False)
     is_active = Column(Boolean, default=True)
     role = Column(SqlEnum(RoleEnum), default=RoleEnum.STUDENT, nullable=False)
     created_at = Column(DateTime, default=datetime.now)
